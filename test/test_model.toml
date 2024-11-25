@@ -212,7 +212,7 @@ description = """
 A cobol application
 """
 
-[data.healh-info]
+[data.health-info]
 classification = "high-risk"
 regulations = ["regulation.phi", "regulation.pii"]
 
