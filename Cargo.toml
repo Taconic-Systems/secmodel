@@ -1,0 +1,4 @@
+[workspace]
+members = ["secmodel", "secmodel_core", "secmodel_md", "secmodel_mermaid"]
+resolver = "2"
+

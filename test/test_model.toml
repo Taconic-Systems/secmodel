@@ -1,0 +1,320 @@
+[network.internet]
+title = "Internet"
+description = "The public internet"
+
+[network.telephone]
+title = "Telephone Network"
+description = "The public telephone network"
+
+[network.cable]
+title = "Telephone Network"
+description = "The "
+protocols = ["ipv4", "ipv6"]
+interfaces = [{network="network.internet"}]
+
+[network.fiber]
+title = "Fiber Network"
+protocols = ["ipv4"]
+interfaces = [{network="network.internet"}]
+
+[network.center]
+title = "Center Street"
+description = """
+Network at home
+"""
+protocols = ["ipv4"]
+ipv4_ranges = ["21.30.152.113/29"]
+
+[network.prod]
+title = "Production"
+description = """
+Production Network
+"""
+ipv4_ranges = ["192.168.2.0/24"]
+controls.ingress_default = "deny"
+controls.egress_default = "allow"
+controls.ingress = [
+		 {flows=["flow.https"], destinations=["server.prod"], controller="server.prod-fw"},
+ 		 {flows=["flow.ssh-keypair"], destinations=["server.prod"], controller="server.prod-fw"}
+	]
+
+[network.main]
+description = """
+Network in Main office
+"""
+controls.ingress = [
+	{flows=["flow.https"], destinations=["server.website"], action="allow"},
+	{flows=["flow.http"], destinations=["server.website"],  action="allow"},
+	{flows=["flow.ssh-keypair"], destinations=["server.website"], action="allow"}
+	]
+
+[network.vendor-vpn]
+description = """
+OpenSWAN VPN connecting to Vendor
+"""
+vpn = true
+interfaces=[{network="network.internet"}]
+
+[server.cable-router]
+interfaces = [{network="network.center", address="21.30.152.118", downstream=true},
+	      {network="network.cable", address="74.123.173.117"}]
+owner = "cable"
+
+[server.prod-fw]
+interfaces = [{network="network.center", address="21.30.152.118"},
+	      {network="network.prod", address="192.168.2.1", downstream=true}]
+os = "linux"
+version = "ubuntu 20"
+
+[server.fiber-router]
+interfaces = [{network="network.fiber"},
+ 	     {network="network.main", address="192.168.10.1", downstream=true}]
+owner = "fiber"
+
+[server.prod]
+interfaces = [{network="network.prod"}]
+os = "linux"
+version = "ubuntu 20"
+applications = ["application.mainapp","application.cobol"]
+stores = ["store.main-mysql", "store.prod-fs"]
+
+
+[store.main-mysql]
+data = ["data.health-info", "data.login-credentials", "data.health-metadata"]
+backing = "store.prod-fs"
+
+[store.prod-fs]
+data = ["data.health-info", "data.ssh-credentials"]
+
+[flow.mainapp-backend]
+sources = ["application.mainapp"]
+data = ["data.health-info", "data.login-credentials"]
+destinations = ["store.prod-fs", "store.main-mysql"]
+
+
+[flow.cobol-backend]
+sources = ["application.cobol"]
+data = ["data.health-info"]
+destinations = ["store.prod-fs"]
+
+
+[data.ssh-credentials]
+description = "ssh private keys used to pull heath info from vendor tool"
+classification = "confidential"
+
+[data.login-credentials]
+description = "Passwords used by clients and employees to login to main app"
+classification = "confidential"
+
+[deployment.mainapp]
+description = "Multi-tenant instance"
+applications = ["application.mainapp"]
+targets = ["server.prod"]
+
+[deployment.cobol]
+applications = ["application.cobol"]
+targets = ["server.prod"]
+
+[application.mainapp]
+description = """
+A multi-tenant Application instance
+"""
+
+[actor.client]
+description="A client"
+
+[actor.employee]
+description="An employee"
+
+[endpoint.client-computer]
+description="A client's computer"
+interfaces = [{network="network.internet"}]
+agents = ["agent.client"]
+
+[endpoint.remote-employee]
+description="An employees computer"
+interfaces = [{network="network.internet"}]
+agents = ["agent.remote-employee"]
+
+[endpoint.office-employee]
+description="An employees computer"
+interfaces = [{network="network.main"}]
+agents = ["agent.office-employee"]
+
+[agent.client]
+description = "Client users on their computer"
+actor = "actor.client"
+
+[agent.remote-employee]
+description = "Employee on their computer"
+actor = "actor.employee"
+
+[agent.office-employee]
+description = "Employee on their computer"
+actor = "actor.employee"
+
+[flow.vendor-pull]
+channel = "channel.ssh-keypair"
+data = ["data.health-info"]
+sources = ["store.vendor-gw-fs"]
+destinations = ["store.prod-fs"]
+
+
+[flow.mainapp-client]
+sources = ["agent.client"]
+destinations = ["application.mainapp"]
+data = ["data.login-credentials", "data.health-info"]
+channel = "channel.https"
+
+
+[flow.website-client]
+sources = ["agent.client"]
+destinations = ["application.website"]
+data = ["data.health-metadata"]
+channel = "channel.https"
+
+
+[flow.mainapp-remote-employee]
+sources = ["agent.remote-employee"]
+destinations = ["application.mainapp"]
+data = ["data.login-credentials", "data.health-info"]
+channel = "channel.https"
+
+[flow.mainapp-office-employee]
+sources = ["agent.office-employee"]
+destinations = ["application.mainapp"]
+data = ["data.login-credentials", "data.health-info"]
+channel = "channel.https"
+
+
+[flow.cobol-client]
+sources = ["agent.client"]
+destinations = ["application.cobol"]
+data = ["data.health-info"]
+channel = "channel.ssh-keypair"
+
+
+[flow.cobol-remote-employee]
+sources = ["agent.remote-employee"]
+destinations = ["application.cobol"]
+data = ["data.health-info"]
+channel = "channel.ssh-keypair"
+
+
+[flow.cobol-office-employee]
+sources = ["agent.office-employee"]
+destinations = ["application.cobol"]
+data = ["data.health-info"]
+channel = "channel.ssh-keypair"
+
+[application.cobol]
+description = """
+A cobol application
+"""
+
+[data.healh-info]
+classification = "high-risk"
+regulations = ["regulation.phi", "regulation.pii"]
+
+[data.healh-metadata]
+classification = "sensitive"
+
+[flow.print-health-info]
+channel = "channel.ipp"
+data = ["data.health-info"]
+sources = ["agent.office-employee"]
+destinations = ["application.cups"]
+
+
+[application.cups]
+description = """
+CUPs Printing Server
+"""
+
+[channel.fax-line]
+description = "A fax machine calling over telephone line"
+
+
+[flow.fax-incoming]
+channel = "channel.fax-line"
+data = ["data.health-info"]
+sources = ["network.telephone"]
+destinations = ["store.fax"]
+
+[store.fax]
+description = "Directory where faxes are stored"
+data = ["data.health-info", "data.health-metadata"]
+
+[flow.fax-share]
+channel = "channel.samba"
+data = ["data.health-info", "data.health-metadata"]
+sources = ["store.fax"]
+destinations = ["agent.office-employee"]
+
+[channel.samba]
+description = "SMB File Sharing protocol"
+
+
+[application.vendor-tool]
+description = """
+Tool for managing vendor distribution
+"""
+
+[flow.vendor-push]
+channel = "channel.https"
+data = ["data.health-info"]
+sources = ["network.vendor-vpn"]
+destinations = ["application.vendor-tool"]
+
+
+[flow.vendor-storage]
+channel = "channel.https"
+data = ["data.health-info"]
+sources = ["application.vendor-tool"]
+destinations = ["store.vendor-gw-fs"]
+
+
+[server.vendor-gw]
+interfaces = [{network="network.center"},
+	      {network="network.vendor-vpn"}]
+applications = ["application.vendor-tool"]
+stores = ["store.vendor-gw-fs"]
+
+[store.vendor-gw-fs]
+data = ["data.health-info"]
+
+[server.dev]
+interfaces = [{network="network.center", hostnames=["customer.dev"]}]
+
+[server.website]
+applications = ["application.website", "application.cups"]
+stores = ["store.fax"]
+interfaces = [{network="network.main", hostnames=["customer.org"]}]
+
+[application.website]
+
+[channel.ipv4]
+protocols = ["ipv4"]
+
+[channel.ipv6]
+protocols = ["ipv4"]
+
+[channel.ip]
+protocols = ["ipv4", "ipv6"]
+
+[channel.ssh-keypair]
+over = ["channel.ipv4"]
+ports = [22]
+protocols = ["ssh"]
+authentication = "keypair"
+encryption = "ssh-ciphers"
+
+[channel.wpa2-wifi]
+protocols = ["wifi"]
+authentication = "wpa2"
+encryption = "wifi"
+
+[channel.https]
+ports = [443]
+protocols = ["https"]
+encryption = "tls"

@@ -1,0 +1,27 @@
+[package]
+name = "secmodel"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+secmodel_core = { path = "../secmodel_core" }
+secmodel_mermaid = { path = "../secmodel_mermaid" }
+secmodel_md = { path = "../secmodel_md" }
+
+# The derive feature lets us use the simple macro forms
+# the env feature allows us to look in the std:env for a value if not provided
+clap = { version = "4.0.29", features = ["derive", "env"] }
+markdown = "1.0.0-alpha.20"
+serde = { version = "1.0.210", features = ["derive"] }
+tera = "1"
+toml = "0.8.19"
+chrono = { version = "0.4", default-features = false, features = ["clock", "serde"] }
+#time = { version = "0.3.36", features = ["parsing", "macros"] }
+serde_json = { version = "1" }
+uuid = { version = "1", features = ["serde", "v4"] }
+anyhow = "1.0.89"
+thiserror = "1.0.64"
+log = "0.4.22"
+
+[lints.clippy]
+pedantic = "warn"
