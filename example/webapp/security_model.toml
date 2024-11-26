@@ -3,10 +3,6 @@ title = "Internet"
 description = "The public internet"
 protocols = ["protocol.ipv4", "protocol.ipv6"]
 
-[network.telephone]
-title = "Telephone Network"
-description = "The public telephone network"
-
 [network.cable]
 title = "Comcast Network"
 description = "The "
@@ -37,7 +33,7 @@ controls.ingress = [
 [server.cable-router]
 title = "Comcast Router"
 interfaces = [{network="network.center", address="20.70.122.13", downstream=true},
-	      {network="network.cable", address="8.13.2.43"}]
+	      {network="network.cable", address="83.153.3.143"}]
 owner = "cable"
 
 [server.prod-fw]
@@ -122,12 +118,6 @@ actor = "actor.employee"
 sources = ["agent.client-browser"]
 destinations = ["application.mainapp"]
 data = ["data.login-credentials", "data.health-info"]
-channel = "channel.https"
-
-[flow.website-client]
-sources = ["agent.client-browser"]
-destinations = ["application.website"]
-data = ["data.health-metadata"]
 channel = "channel.https"
 
 [data.health-info]

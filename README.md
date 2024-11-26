@@ -25,6 +25,7 @@ Production Network
 ipv4_ranges = ["192.168.1.0/24"]
 
 [server.prod]
+title = "Prod"
 interfaces = [{network="network.prod"}]
 applications = ["application.mainapp"]
 stores = ["store.main-mysql", "store.prod-fs"]
@@ -40,10 +41,6 @@ sources = ["agent.client"]
 destinations = ["application.mainapp"]
 data = ["data.login-credentials", "data.health-info"]
 channel = "channel.https"
-
-[data.health-info]
-classification = "high-risk"
-regulations = ["regulation.phi", "regulation.pii"]
 
 [data.health-info]
 regulations = ["regulation.phi", "regulation.pii"]
@@ -62,11 +59,6 @@ data = ["data.health-info", "data.ssh-credentials"]
 
 [channel.https]
 ports = [443]
-protocols = ["https"]
-encryption = "tls"
-
-[channel.https]
-ports = [443]
 protocols = ["protocol.https"]
 encryption = "encryption.tls"
 
@@ -80,12 +72,11 @@ cargo run -- -m mymodel.toml report > report.md
 ```
 
 Subsequently, you can use the mermaid CLI,`mmdc`, and `pandoc` to
-generate a PDF:
+generate a PDF.
 
 ```sh
 mmdc -i report.md -e pdf -o out.md && pandoc --toc out.md -o report.pdf
 ```
-
 
 To create just the overview diagram:
 
@@ -96,7 +87,7 @@ cargo run -- -m mymodel.toml diagram > diagram.m
 That can be processes with the mermaid CLI into an svg,  this will produce a `diagram.m.svg` in the current directory:
 
 ```sh
-./node_modules/.bin/mmdc -i diagram.m -b black
+mmdc -i diagram.m -b black
 ```
 
 
