@@ -12,57 +12,11 @@ The project is Rust workspace containing the following crates:
 * secmodel_md -- library for generating markdown reports
 * sedmodel_mermaid -- library for generating Mermaid diagrams
 
-The model is defined in a [TOML File](test/test_model.toml) and an be processed with the `secmodel` CLI tool.
+The model is defined in a [TOML File](example/webapp/security_model.toml) and an be processed with the `secmodel` CLI to produce an [Overview Diagram](example/webapp/overview.png) and a [Security Architecture Report](example/webapp/report.md) ([(pdf)](example/webapp/report.pdf)
 
-For example, a small model of a web based medical billing application:
+Here is an example model of a simplified web app
 
-```toml
-[network.prod]
-title = "Production"
-description = """
-Production Network
-"""
-ipv4_ranges = ["192.168.1.0/24"]
-
-[server.prod]
-title = "Prod"
-interfaces = [{network="network.prod"}]
-applications = ["application.mainapp"]
-stores = ["store.main-mysql", "store.prod-fs"]
-
-[application.mainapp]
-title = "MainApp"
-description = """
-A multi-tenant PHP Based Medical Billing System
-"""
-
-[flow.mainapp-client]
-sources = ["agent.client"]
-destinations = ["application.mainapp"]
-data = ["data.login-credentials", "data.health-info"]
-channel = "channel.https"
-
-[data.health-info]
-regulations = ["regulation.phi", "regulation.pii"]
-classification = "high-risk"
-
-[data.login-credentials]
-description = "Passwords used by clients and employees to login to main app"
-classification = "confidential"
-
-[store.main-mysql]
-data = ["data.health-info", "data.login-credentials", "data.health-metadata"]
-backing = "store.prod-fs"
-
-[store.prod-fs]
-data = ["data.health-info", "data.ssh-credentials"]
-
-[channel.https]
-ports = [443]
-protocols = ["protocol.https"]
-encryption = "encryption.tls"
-
-```
+![Webapp Security Model Diagram](example/webapp/overview.png)
 
 # Usage
 
