@@ -35,19 +35,6 @@ end
 end
 
 %% End server subgraph: endpoint.client-computer
-%% Start server subgraph: endpoint.remote-employee
-subgraph endpoint.remote-employee
-%% Start agent subgraph: agent.remote-employee-browser
-subgraph agent.remote-employee-browser
-%% Actor node: agent.remote-employee-browser.actor.employee
-agent.remote-employee-browser.actor.employee@{ shape: stadium, label: agent.remote-employee-browser.actor.employee}
-
-end
-%% End agent subgraph: agent.remote-employee-browser
-
-end
-
-%% End server subgraph: endpoint.remote-employee
 
 end
 click network.internet "#network.internet" "Internet"
@@ -95,13 +82,6 @@ agent.client-browser.actor.client@{ shape: stadium, label: agent.client-browser.
 
 end
 %% End agent subgraph: agent.client-browser
-%% Start agent subgraph: agent.remote-employee-browser
-subgraph agent.remote-employee-browser
-%% Actor node: agent.remote-employee-browser.actor.employee
-agent.remote-employee-browser.actor.employee@{ shape: stadium, label: agent.remote-employee-browser.actor.employee}
-
-end
-%% End agent subgraph: agent.remote-employee-browser
 %% Start server subgraph: server.cable-router
 subgraph server.cable-router
 
@@ -147,19 +127,6 @@ end
 end
 
 %% End server subgraph: endpoint.client-computer
-%% Start server subgraph: endpoint.remote-employee
-subgraph endpoint.remote-employee
-%% Start agent subgraph: agent.remote-employee-browser
-subgraph agent.remote-employee-browser
-%% Actor node: agent.remote-employee-browser.actor.employee
-agent.remote-employee-browser.actor.employee@{ shape: stadium, label: agent.remote-employee-browser.actor.employee}
-
-end
-%% End agent subgraph: agent.remote-employee-browser
-
-end
-
-%% End server subgraph: endpoint.remote-employee
 %% Application node: application.mainapp
 application.mainapp@{ shape: procs, label: application.mainapp}
 
@@ -181,7 +148,6 @@ The public internet
 Connected Endpoints:
 
 * [Client Computer](#endpoint.client-computer)
-* [Remote Employee](#endpoint.remote-employee)
 
 
 ----
@@ -308,25 +274,6 @@ Hosted Agents:
 
 ----
 
-### Remote Employee {#endpoint.remote-employee}
-
-An employees computer
-
-
-
-Network Interfaces:
-
-*  Network: [Internet](#network.internet)
-
-
-Hosted Agents:
-
-* agent.remote-employee-ssh
-* [Remote Employee Browser](#agent.remote-employee-browser)
-
-
-----
-
 ## Applications
 
 ### PHP WebApp {#application.mainapp}
@@ -351,13 +298,6 @@ A client
 
 ----
 
-### Employee {#actor.employee}
-
-An employee
-
-
-----
-
 ## Agents
 
 ### Client Browser {#agent.client-browser}
@@ -370,16 +310,6 @@ Clients using a web browser on their computer.
 Connected Flows:
 
 * [flow.mainapp-client](#flow.mainapp-client)
-
-
-----
-
-### Remote Employee Browser {#agent.remote-employee-browser}
-
-Employee on their computer
-
-* Actor: [Employee](#actor.employee)
-* Process: process.web-browser
 
 
 ----

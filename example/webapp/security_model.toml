@@ -86,33 +86,17 @@ A multi-tenant Application instance
 title = "Client"
 description="A client"
 
-[actor.employee]
-title = "Employee"
-description="An employee"
-
 [endpoint.client-computer]
 title = "Client Computer"
 description="A client's computer"
 interfaces = [{network="network.internet"}]
 agents = ["agent.client-ssh", "agent.client-browser"]
 
-[endpoint.remote-employee]
-title = "Remote Employee"
-description="An employees computer"
-interfaces = [{network="network.internet"}]
-agents = ["agent.remote-employee-ssh", "agent.remote-employee-browser"]
-
 [agent.client-browser]
 title = "Client Browser"
 description = "Clients using a web browser on their computer."
 process = "process.web-browser"
 actor = "actor.client"
-
-[agent.remote-employee-browser]
-title = "Remote Employee Browser"
-description = "Employee on their computer"
-process = "process.web-browser"
-actor = "actor.employee"
 
 [flow.mainapp-client]
 sources = ["agent.client-browser"]
