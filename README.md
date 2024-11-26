@@ -10,7 +10,7 @@ The project is Rust workspace containing the following crates:
 * secmodel -- a CLI frontend
 * secmodel_core -- a library providing the domain model
 * secmodel_md -- library for generating markdown reports
-* sedmodel_mermaid -- library for generating Mermaid diagrams
+* secmodel_mermaid -- library for generating Mermaid diagrams
 
 The model is defined in a [TOML File](example/webapp/security_model.toml) and an be processed with the `secmodel` CLI to produce an [Overview Diagram](example/webapp/overview.png) and a [Security Architecture Report](example/webapp/report.md) ([(pdf)](example/webapp/report.pdf)
 
